@@ -1,4 +1,4 @@
-# Nidhara | নিধারা 🌊✨
+# <img src="Doc/asset/Nidhara_s_transparent.png" width="35" /> Nidhara | নিধারা
 
 **Nidhara** is your personal sanctuary for managing **finances, personal growth, and life** in one secure, fluid platform.
 
