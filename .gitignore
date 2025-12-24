@@ -1,0 +1,28 @@
+# --- General / OS ---
+.DS_Store
+Thumbs.db
+.env
+.vscode/
+.idea/
+
+# --- Documentation ---
+doc/build/
+doc/site/
+*.log
+
+# --- Frontend (assuming React, Vue, or similar) ---
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.env.local
+frontend/.next/
+
+# --- Backend (assuming Node.js, Python, or Go) ---
+backend/node_modules/
+backend/src/generated
+backend/venv/
+backend/__pycache__/
+backend/dist/
+backend/*.db
+backend/.env
+backend/prisma/generated/
