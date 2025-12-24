@@ -1,0 +1,30 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client"        // Recommended for v7 (Pure TS, no Rust)
+  output   = "../src/generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  // Note: url property is removed. It lives in prisma.config.ts
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  password  String   
+  role      Role     @default(USER)       
+  
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users") 
+}
