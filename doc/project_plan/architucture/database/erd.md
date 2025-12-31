@@ -1,21 +1,21 @@
 ## **1️⃣ Core Identity & Security Module ERD**
 
-```mermaid
+````mermaid
 erDiagram
     %% USERS
     users {
-        UUID id PK
-        TEXT email
+        BIGSERIAL id PK
+        TEXT username UNIQUE
+        TEXT email UNIQUE
         TEXT display_name
-        ENUM status
         TIMESTAMP created_at
         TIMESTAMP updated_at
     }
 
     %% AUTH_CREDENTIALS
     auth_credentials {
-        UUID id PK
-        UUID user_id FK
+        BIGSERIAL id PK
+        BIGINT user_id FK
         ENUM type
         TEXT secret_hash
         JSONB metadata
@@ -24,27 +24,50 @@ erDiagram
 
     %% AUTH_SESSIONS
     auth_sessions {
-        UUID id PK
-        UUID user_id FK
+        BIGSERIAL id PK
+        BIGINT user_id FK
+        TEXT refresh_token_hash
         TEXT ip_address
         TEXT user_agent
+        TEXT device_name
         TIMESTAMP expires_at
+        TIMESTAMP revoked_at
         TIMESTAMP created_at
     }
 
     %% SECURITY_EVENTS
     security_events {
-        UUID id PK
-        UUID user_id
+        BIGSERIAL id PK
+        BIGINT user_id
         ENUM type
         JSONB metadata
         TIMESTAMP created_at
     }
 
+    %% USER_ACCOUNT_SECURITY_STATE
+    user_account_security_state {
+        BIGINT user_id PK FK
+        INT failed_attempts
+        TIMESTAMP cooldown_until
+        BOOLEAN permanently_locked
+        TIMESTAMP last_failed_at
+        TIMESTAMP updated_at
+    }
+
+    %% SUDO_SESSIONS
+    sudo_sessions {
+        BIGINT user_id PK FK
+        TIMESTAMP sudo_until
+        ENUM method
+        TEXT ip_address
+        TEXT user_agent
+        TIMESTAMP created_at
+    }
+
     %% RECOVERY_KEYS
     recovery_keys {
-        UUID id PK
-        UUID user_id FK
+        BIGSERIAL id PK
+        BIGINT user_id FK
         TEXT key_hash
         TIMESTAMP used_at
         TIMESTAMP created_at
@@ -55,7 +78,8 @@ erDiagram
     users ||--o{ auth_sessions : has
     users ||--o{ recovery_keys : has
     users ||--o{ security_events : generates
-```
+    users ||--|| user_account_security_state : has
+    users ||--|| sudo_sessions : has
 
 ---
 
@@ -114,7 +138,7 @@ erDiagram
     circles ||--o{ circle_events : has
     users ||--o{ circle_members : belongs_to
     permission_policies ||--o{ permission_logs : has
-```
+````
 
 ---
 

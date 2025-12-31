@@ -10,7 +10,7 @@
 
 1. **AuthModule**
 
-   - Authentication (passkeys, sessions, tokens)
+   - Authentication ( sessions, tokens)
    - Integrate **audit logs** for login, logout, credential changes
 
 2. **RecoveryModule**

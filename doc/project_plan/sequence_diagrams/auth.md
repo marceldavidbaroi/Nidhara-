@@ -63,7 +63,7 @@ sequenceDiagram
 <details>
 <summary><b>Sign up</b></summary>
 
-````mermaid
+```mermaid
 sequenceDiagram
     autonumber
     actor User
@@ -112,7 +112,8 @@ sequenceDiagram
     else User Finishes Tutorial
         User->>FE: Click "Finish"
         FE->>FE: Stay on current page (Dashboard/Profile)
-    end```
+    end
+```
 
 </details>
 
@@ -142,7 +143,7 @@ sequenceDiagram
     FE->>FE: Clear local app state (User info, etc.)
     FE->>FE: Redirect to /login
     FE-->>User: Show Login Screen
-````
+```
 
 </details>
 

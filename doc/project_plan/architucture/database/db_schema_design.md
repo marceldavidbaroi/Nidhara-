@@ -10,51 +10,115 @@
 
 ```sql
 users (
-  id UUID PK,
+  id BIGSERIAL PK,
+
+  username TEXT UNIQUE,
   email TEXT UNIQUE,
+
   display_name TEXT,
-  status ENUM('ACTIVE','LOCKED','PERMANENT_LOCK'),
+
   created_at TIMESTAMP,
   updated_at TIMESTAMP
 )
+
 ```
 
 - `auth_credentials`
 
 ```sql
 auth_credentials (
-  id UUID PK,
-  user_id UUID FK(users.id),
-  type ENUM('PASSKEY','SECRET_QUESTION'),
+  id BIGSERIAL PK,
+  user_id BIGSERIAL FK(users.id),
+
+  type ENUM('PASSWORD','PASSKEY','SECRET_QUESTION'),
   secret_hash TEXT,
   metadata JSONB,
+
   created_at TIMESTAMP
 )
+
 ```
 
 - `auth_sessions`
 
 ```sql
 auth_sessions (
-  id UUID PK,
-  user_id UUID FK(users.id),
+  id BIGSERIAL PK,
+  user_id BIGSERIAL FK(users.id),
+
+  refresh_token_hash TEXT,
+
   ip_address TEXT,
   user_agent TEXT,
+  device_name TEXT,
+
   expires_at TIMESTAMP,
+  revoked_at TIMESTAMP NULL,
+
   created_at TIMESTAMP
 )
+
+
 ```
 
 - `security_events` (Auth-specific log)
 
 ```sql
 security_events (
-  id UUID PK,
-  user_id UUID,
-  type ENUM('FAILED_LOGIN','LOCKOUT','UNLOCK'),
+  id BIGSERIAL PK,
+  user_id BIGSERIAL,
+
+  type ENUM(
+    'LOGIN_SUCCESS',
+    'LOGIN_FAILED',
+    'LOGOUT',
+    'REFRESH_ROTATED',
+    'ACCOUNT_LOCKED',
+    'ACCOUNT_UNLOCKED',
+    'PASSWORD_CHANGED',
+    'RECOVERY_KEY_USED',
+    'RECOVERY_KEY_REGENERATED',
+    'SUDO_MODE_ENABLED'
+  ),
+
   metadata JSONB,
   created_at TIMESTAMP
 )
+
+```
+
+- `user_account_security_state`
+
+```sql
+user_account_security_state (
+  user_id BIGSERIAL PK FK(users.id),
+
+  failed_attempts INT DEFAULT 0,
+  cooldown_until TIMESTAMP NULL,
+  permanently_locked BOOLEAN DEFAULT FALSE,
+  last_failed_at TIMESTAMP NULL,
+
+  updated_at TIMESTAMP
+)
+
+```
+
+- `sudo_sessions`
+
+```sql
+sudo_sessions (
+  user_id BIGSERIAL PK FK(users.id),
+
+  sudo_until TIMESTAMP,
+  method ENUM('PASSWORD','RECOVERY_KEY','MFA'),
+
+  ip_address TEXT,
+  user_agent TEXT,
+
+  created_at TIMESTAMP
+)
+
+
 ```
 
 ---
@@ -65,12 +129,15 @@ security_events (
 
 ```sql
 recovery_keys (
-  id UUID PK,
-  user_id UUID FK(users.id),
+  id BIGSERIAL PK,
+  user_id BIGSERIAL FK(users.id),
+
   key_hash TEXT,
-  used_at TIMESTAMP,
+  used_at TIMESTAMP NULL,
+
   created_at TIMESTAMP
 )
+
 ```
 
 ---
@@ -93,9 +160,9 @@ recovery_keys (
 
 ```sql
 circles (
-  id UUID PK,
+  id BIGSERIAL PK,
   name TEXT,
-  owner_id UUID FK(users.id),
+  owner_id BIGSERIAL FK(users.id),
   status ENUM('ACTIVE','DISSOLVED'),
   created_at TIMESTAMP
 )
@@ -105,9 +172,9 @@ circles (
 
 ```sql
 circle_members (
-  id UUID PK,
-  circle_id UUID FK(circles.id),
-  user_id UUID FK(users.id),
+  id BIGSERIAL PK,
+  circle_id BIGSERIAL FK(circles.id),
+  user_id BIGSERIAL FK(users.id),
   role ENUM('OWNER','ADMIN','EDITOR','VISITOR'),
   joined_at TIMESTAMP
 )
@@ -117,8 +184,8 @@ circle_members (
 
 ```sql
 circle_events (
-  id UUID PK,
-  circle_id UUID,
+  id BIGSERIAL PK,
+  circle_id BIGSERIAL,
   type ENUM('DISSOLVED','OWNER_TRANSFERRED','MEMBER_ADDED','MEMBER_REMOVED'),
   payload JSONB,
   created_at TIMESTAMP
@@ -131,7 +198,7 @@ circle_events (
 
 ```sql
 permission_policies (
-  id UUID PK,
+  id BIGSERIAL PK,
   role ENUM('OWNER','ADMIN','EDITOR','VISITOR'),
   resource TEXT,
   action TEXT,
@@ -143,9 +210,9 @@ permission_policies (
 
 ```sql
 permission_logs (
-  id UUID PK,
-  policy_id UUID FK(permission_policies.id),
-  changed_by UUID,
+  id BIGSERIAL PK,
+  policy_id BIGSERIAL FK(permission_policies.id),
+  changed_by BIGSERIAL,
   old_value JSONB,
   new_value JSONB,
   created_at TIMESTAMP
@@ -162,9 +229,9 @@ permission_logs (
 
 ```sql
 accounts (
-  id UUID PK,
-  circle_id UUID FK(circles.id),
-  owner_id UUID FK(users.id),
+  id BIGSERIAL PK,
+  circle_id BIGSERIAL FK(circles.id),
+  owner_id BIGSERIAL FK(users.id),
   type ENUM('BANK','WALLET','CREDIT'),
   name TEXT,
   archived_at TIMESTAMP,
@@ -176,8 +243,8 @@ accounts (
 
 ```sql
 account_audit_logs (
-  id UUID PK,
-  account_id UUID,
+  id BIGSERIAL PK,
+  account_id BIGSERIAL,
   action TEXT,
   metadata JSONB,
   created_at TIMESTAMP
@@ -190,13 +257,13 @@ account_audit_logs (
 
 ```sql
 transactions (
-  id UUID PK,
-  account_id UUID FK(accounts.id),
+  id BIGSERIAL PK,
+  account_id BIGSERIAL FK(accounts.id),
   amount NUMERIC,
   direction ENUM('IN','OUT'),
   status ENUM('POSTED','VOIDED'),
-  category_id UUID,
-  created_by UUID,
+  category_id BIGSERIAL,
+  created_by BIGSERIAL,
   created_at TIMESTAMP
 )
 ```
@@ -205,8 +272,8 @@ transactions (
 
 ```sql
 transaction_receipts (
-  id UUID PK,
-  transaction_id UUID,
+  id BIGSERIAL PK,
+  transaction_id BIGSERIAL,
   document_url TEXT,
   created_at TIMESTAMP
 )
@@ -216,11 +283,11 @@ transaction_receipts (
 
 ```sql
 transaction_logs (
-  id UUID PK,
-  transaction_id UUID FK(transactions.id),
+  id BIGSERIAL PK,
+  transaction_id BIGSERIAL FK(transactions.id),
   old_status ENUM('POSTED','VOIDED'),
   new_status ENUM('POSTED','VOIDED'),
-  changed_by UUID,
+  changed_by BIGSERIAL,
   created_at TIMESTAMP
 )
 ```
@@ -231,7 +298,7 @@ transaction_logs (
 
 ```sql
 categories (
-  id UUID PK,
+  id BIGSERIAL PK,
   module ENUM('FINANCE','LIFELOG','KNOWLEDGE'),
   name TEXT,
   system_defined BOOLEAN
@@ -242,7 +309,7 @@ categories (
 
 ```sql
 tags (
-  id UUID PK,
+  id BIGSERIAL PK,
   name TEXT,
   module TEXT
 )
@@ -252,8 +319,8 @@ tags (
 
 ```sql
 tag_relations (
-  tag_id UUID,
-  entity_id UUID,
+  tag_id BIGSERIAL,
+  entity_id BIGSERIAL,
   entity_type TEXT
 )
 ```
@@ -268,9 +335,9 @@ tag_relations (
 
 ```sql
 lifelogs (
-  id UUID PK,
-  circle_id UUID,
-  author_id UUID,
+  id BIGSERIAL PK,
+  circle_id BIGSERIAL,
+  author_id BIGSERIAL,
   content TEXT,
   created_at TIMESTAMP
 )
@@ -280,8 +347,8 @@ lifelogs (
 
 ```sql
 capsules (
-  id UUID PK,
-  lifelog_id UUID,
+  id BIGSERIAL PK,
+  lifelog_id BIGSERIAL,
   unlock_at TIMESTAMP,
   unlocked_at TIMESTAMP
 )
@@ -291,11 +358,11 @@ capsules (
 
 ```sql
 lifelog_logs (
-  id UUID PK,
-  lifelog_id UUID FK(lifelogs.id),
+  id BIGSERIAL PK,
+  lifelog_id BIGSERIAL FK(lifelogs.id),
   old_content TEXT,
   new_content TEXT,
-  updated_by UUID,
+  updated_by BIGSERIAL,
   created_at TIMESTAMP
 )
 ```
@@ -306,9 +373,9 @@ lifelog_logs (
 
 ```sql
 tasks (
-  id UUID PK,
-  circle_id UUID,
-  creator_id UUID,
+  id BIGSERIAL PK,
+  circle_id BIGSERIAL,
+  creator_id BIGSERIAL,
   title TEXT,
   status ENUM('TODO','IN_PROGRESS','DONE'),
   created_at TIMESTAMP
@@ -319,8 +386,8 @@ tasks (
 
 ```sql
 task_assignments (
-  task_id UUID,
-  user_id UUID
+  task_id BIGSERIAL,
+  user_id BIGSERIAL
 )
 ```
 
@@ -328,11 +395,11 @@ task_assignments (
 
 ```sql
 task_logs (
-  id UUID PK,
-  task_id UUID FK(tasks.id),
+  id BIGSERIAL PK,
+  task_id BIGSERIAL FK(tasks.id),
   old_status ENUM('TODO','IN_PROGRESS','DONE'),
   new_status ENUM('TODO','IN_PROGRESS','DONE'),
-  updated_by UUID,
+  updated_by BIGSERIAL,
   created_at TIMESTAMP
 )
 ```
@@ -343,9 +410,9 @@ task_logs (
 
 ```sql
 notes (
-  id UUID PK,
-  owner_id UUID,
-  circle_id UUID,
+  id BIGSERIAL PK,
+  owner_id BIGSERIAL,
+  circle_id BIGSERIAL,
   content TEXT,
   created_at TIMESTAMP
 )
@@ -355,8 +422,8 @@ notes (
 
 ```sql
 note_reminders (
-  id UUID PK,
-  note_id UUID,
+  id BIGSERIAL PK,
+  note_id BIGSERIAL,
   remind_at TIMESTAMP
 )
 ```
@@ -365,11 +432,11 @@ note_reminders (
 
 ```sql
 note_logs (
-  id UUID PK,
-  note_id UUID FK(notes.id),
+  id BIGSERIAL PK,
+  note_id BIGSERIAL FK(notes.id),
   old_content TEXT,
   new_content TEXT,
-  updated_by UUID,
+  updated_by BIGSERIAL,
   created_at TIMESTAMP
 )
 ```
@@ -380,8 +447,8 @@ note_logs (
 
 ```sql
 contacts (
-  id UUID PK,
-  owner_id UUID,
+  id BIGSERIAL PK,
+  owner_id BIGSERIAL,
   name TEXT,
   metadata JSONB,
   created_at TIMESTAMP
@@ -392,11 +459,11 @@ contacts (
 
 ```sql
 contact_logs (
-  id UUID PK,
-  contact_id UUID FK(contacts.id),
+  id BIGSERIAL PK,
+  contact_id BIGSERIAL FK(contacts.id),
   old_value JSONB,
   new_value JSONB,
-  updated_by UUID,
+  updated_by BIGSERIAL,
   created_at TIMESTAMP
 )
 ```
@@ -407,9 +474,9 @@ contact_logs (
 
 ```sql
 trips (
-  id UUID PK,
-  circle_id UUID,
-  owner_id UUID,
+  id BIGSERIAL PK,
+  circle_id BIGSERIAL,
+  owner_id BIGSERIAL,
   title TEXT,
   start_date DATE,
   end_date DATE
@@ -420,8 +487,8 @@ trips (
 
 ```sql
 trip_budgets (
-  id UUID PK,
-  trip_id UUID,
+  id BIGSERIAL PK,
+  trip_id BIGSERIAL,
   amount NUMERIC
 )
 ```
@@ -430,11 +497,11 @@ trip_budgets (
 
 ```sql
 trip_logs (
-  id UUID PK,
-  trip_id UUID FK(trips.id),
+  id BIGSERIAL PK,
+  trip_id BIGSERIAL FK(trips.id),
   old_value JSONB,
   new_value JSONB,
-  updated_by UUID,
+  updated_by BIGSERIAL,
   created_at TIMESTAMP
 )
 ```
@@ -449,10 +516,10 @@ trip_logs (
 
 ```sql
 audit_logs (
-  id UUID PK,
-  actor_id UUID,
+  id BIGSERIAL PK,
+  actor_id BIGSERIAL,
   entity_type TEXT,
-  entity_id UUID,
+  entity_id BIGSERIAL,
   action TEXT,
   created_at TIMESTAMP
 )
@@ -465,7 +532,7 @@ audit_logs (
 ```sql
 search_index (
   entity_type TEXT,
-  entity_id UUID,
+  entity_id BIGSERIAL,
   searchable_text TSVECTOR
 )
 ```
