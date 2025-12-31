@@ -1,5 +1,4 @@
-<details>
-<summary>The Goal Creation Flow</summary>
+**The Goal Creation Flow**
 
 ```mermaid
 sequenceDiagram
@@ -28,10 +27,7 @@ sequenceDiagram
     BE-->>User: 201 Created (Goal + Account Ready)
 ```
 
-</details>
-
-<details>
-<summary>Goal Fetching (Circle-Scoped)</summary>
+**Goal Fetching (Circle-Scoped)**
 
 ```mermaid
 sequenceDiagram
@@ -49,5 +45,3 @@ sequenceDiagram
     BE->>BE: Calculate % Progress (current / target)
     BE-->>Member: 200 OK (Data for Progress Bars)
 ```
-
-</details>

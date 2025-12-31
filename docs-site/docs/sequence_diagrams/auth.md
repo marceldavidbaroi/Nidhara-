@@ -1,8 +1,6 @@
 # Authentication Module
 
-<details>
-<summary><b>Signin</b>
-</summary>
+**Signin**
 
 ```mermaid
 sequenceDiagram
@@ -58,10 +56,7 @@ sequenceDiagram
     end
 ```
 
-</details>
-
-<details>
-<summary><b>Sign up</b></summary>
+**Sign up**
 
 ```mermaid
 sequenceDiagram
@@ -115,9 +110,7 @@ sequenceDiagram
     end
 ```
 
-</details>
-
-<details> <summary><b> Logout </b></summary>
+** Logout **
 
 ```mermaid
 sequenceDiagram
@@ -145,9 +138,7 @@ sequenceDiagram
     FE-->>User: Show Login Screen
 ```
 
-</details>
-
-<details> <summary><b>View Regenerate Recovery Passkey Sequence Diagram</b></summary>
+**View Regenerate Recovery Passkey Sequence Diagram**
 
 ```mermaid
 sequenceDiagram
@@ -185,9 +176,7 @@ sequenceDiagram
     FE->>FE: Redirect/Close Modal
 ```
 
-</details>
-
-<details> <summary><b>View Forgot Password Sequence Diagram (with Rate Limiting)</b></summary>
+**View Forgot Password Sequence Diagram (with Rate Limiting)**
 
 ```mermaid
 sequenceDiagram
@@ -259,5 +248,3 @@ sequenceDiagram
     User->>FE: Click "Close"
     FE->>FE: Redirect to /dashboard
 ```
-
-</details>

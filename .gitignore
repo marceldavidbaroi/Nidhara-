@@ -26,3 +26,5 @@ backend/dist/
 backend/*.db
 backend/.env
 backend/prisma/generated/
+
+docs-sites/node_modules/

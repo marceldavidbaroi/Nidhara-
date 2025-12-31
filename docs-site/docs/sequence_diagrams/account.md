@@ -1,4 +1,4 @@
-<details> <summary><b>Account Creation (Atomic)</b></summary>
+## Account Creation (Atomic)
 
 ```mermaid
 sequenceDiagram
@@ -19,9 +19,7 @@ sequenceDiagram
     BE-->>User: 201 Created
 ```
 
-</details>
-
-<details> <summary><b>Update & Archive (Soft Delete)</b></summary>
+## Update & Archive (Soft Delete)
 
 ```mermaid
 sequenceDiagram
@@ -49,9 +47,7 @@ sequenceDiagram
     end
 ```
 
-</details>
-
-<details> <summary><b>Fetch List & Fetch One (Circle-Based)</b></summary>
+## Fetch List & Fetch One (Circle-Based)
 
 ```mermaid
 sequenceDiagram
@@ -77,9 +73,7 @@ sequenceDiagram
     BE-->>Member: 200 OK (Details)
 ```
 
-</details>
-
-<details> <summary><b>Audit Log Fetching (Privacy Rules)</b></summary>
+## Audit Log Fetching (Privacy Rules)
 
 ```mermaid
 sequenceDiagram
@@ -111,9 +105,7 @@ sequenceDiagram
     BE-->>Requester: 200 OK (Logs)
 ```
 
-</details>
-
-<details> <summary><b>Security Lockout & Recovery</b></summary>
+## Security Lockout & Recovery
 
 ```mermaid
 sequenceDiagram
@@ -147,9 +139,7 @@ sequenceDiagram
     BE-->>Owner: 200 OK (Access Restored)
 ```
 
-</details>
-
-<details> <summary><b>Transfer Ownership (Double Verification)</b></summary>
+## Transfer Ownership (Double Verification)
 
 ```mermaid
 sequenceDiagram
@@ -189,5 +179,3 @@ sequenceDiagram
 
     BE-->>Owner: 200 OK (Transfer Complete)
 ```
-
-</details>

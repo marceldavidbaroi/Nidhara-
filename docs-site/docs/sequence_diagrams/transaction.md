@@ -1,5 +1,4 @@
-<details>
-<summary>The Transaction Lifecycle (Pending to Cleared)</summary>
+**The Transaction Lifecycle (Pending to Cleared)**
 
 ```mermaid
 sequenceDiagram
@@ -29,10 +28,7 @@ sequenceDiagram
     BE-->>User: 201 Created
 ```
 
-</details>
-
-<details>
-<summary>The "Manual Confirmation" Flow (Post-Creation)</summary>
+**The "Manual Confirmation" Flow (Post-Creation)**
 
 ```mermaid
 sequenceDiagram
@@ -62,10 +58,7 @@ sequenceDiagram
     BE-->>FE: 200 OK (UI updates balance)
 ```
 
-</details>
-
-<details>
-<summary>Bulk Transaction Creation (Atomic Batch)</summary>
+**Bulk Transaction Creation (Atomic Batch)**
 
 ```mermaid
 sequenceDiagram
@@ -102,10 +95,7 @@ sequenceDiagram
     end
 ```
 
-</details>
-
-<details>
-<summary>Update Logic (Immutable Ledger Pattern)</summary>
+**Update Logic (Immutable Ledger Pattern)**
 
 ```mermaid
 sequenceDiagram
@@ -138,10 +128,7 @@ sequenceDiagram
     BE-->>User: 200 OK
 ```
 
-</details>
-
-<details>
-<summary>Void & Revive (Soft Delete Only)</summary>
+**Void & Revive (Soft Delete Only)**
 
 ```mermaid
 sequenceDiagram
@@ -175,10 +162,7 @@ sequenceDiagram
     BE-->>User: 200 OK
 ```
 
-</details>
-
-<details>
-<summary>Visibility & Fetching</summary>
+**Visibility & Fetching**
 
 ```mermaid
 sequenceDiagram
@@ -198,13 +182,8 @@ sequenceDiagram
     BE-->>Member: 200 OK
 ```
 
-</details>
-
-<details>
-<summary></summary>
+---
 
 ```mermaid
 
 ```
-
-</details>

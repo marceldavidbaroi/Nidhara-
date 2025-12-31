@@ -1,5 +1,4 @@
-<details>
-<summary>Create Category / Tag</summary>
+**Create Category / Tag**
 
 ```mermaid
 sequenceDiagram
@@ -24,10 +23,7 @@ sequenceDiagram
     end
 ```
 
-</details>
-
-<details>
-<summary>Update & Delete (Soft Delete)</summary>
+**Update & Delete (Soft Delete)**
 
 ```mermaid
 sequenceDiagram
@@ -52,9 +48,7 @@ sequenceDiagram
     BE-->>User: 200 OK
 ```
 
-</details>
-<details>
-<summary>Fetching (The Hybrid Logic)</summary>
+**Fetching (The Hybrid Logic)**
 
 ```mermaid
 sequenceDiagram
@@ -72,9 +66,7 @@ sequenceDiagram
     BE-->>Member: 200 OK (Clean list for UI)
 ```
 
-</details>
-<details>
-<summary>Module-Scoped Tag Search</summary>
+**Module-Scoped Tag Search**
 
 ```mermaid
 sequenceDiagram
@@ -91,5 +83,3 @@ sequenceDiagram
     DB-->>BE: Results (Finance entries only)
     BE-->>User: 200 OK
 ```
-
-</details>

@@ -25,14 +25,14 @@ root/
 ┃   ┣━━ 📂 config/               # ENV & PROVIDER CONFIG
 ┃   ┃
 ┃   ┣━━ 📂 modules/              # DOMAIN FEATURES
-┃   ┃   ┗━━ <module-name>/       # e.g., "users"
+┃   ┃   ┗━━ module-name/       # e.g., "users"
 ┃   ┃       ┣━━ controller/      # HTTP Entry (with Swagger decorators)
 ┃   ┃       ┣━━ services/        # Business Logic
 ┃   ┃       ┣━━ repository/      # Prisma queries (Isolated from service)
 ┃   ┃       ┣━━ transformers/    # Prisma Type -> API Response
 ┃   ┃       ┣━━ validators/      # Complex business validation
 ┃   ┃       ┣━━ dto/             # Class-validator & Swagger shapes
-┃   ┃       ┗━━ <module>.module.ts
+┃   ┃       ┗━━ module.module.ts
 ┃   ┃
 ┃   ┣━━ 📜  app.module.ts        # ROOT ORCHESTRATOR
 ┃   ┗━━ 🏁  main.ts              # BOOTSTRAP, PINO & SWAGGER SETUP

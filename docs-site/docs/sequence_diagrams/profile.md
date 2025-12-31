@@ -1,7 +1,6 @@
 # Profile
 
-<details>
-<summary>Update Profile & Granular Privacy</summary>
+**Update Profile & Granular Privacy**
 
 ```mermaid
 sequenceDiagram
@@ -30,10 +29,7 @@ sequenceDiagram
     FE-->>User: Show "Profile Saved"
 ```
 
-</details>
-
-<details>
-<summary>View Profile (The Gatekeeper Logic)</summary>
+**View Profile (The Gatekeeper Logic)**
 
 ```mermaid
 sequenceDiagram
@@ -70,5 +66,3 @@ sequenceDiagram
     BE-->>FE: Return Filtered JSON Body
     FE-->>Viewer: Render only allowed fields
 ```
-
-</details>

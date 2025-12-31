@@ -1,4 +1,4 @@
-# **System Planning Template (Generic / Repo-ready)**
+# System Planning Template
 
 ## **1. Requirements Gathering**
 

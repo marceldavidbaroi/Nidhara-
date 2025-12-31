@@ -1,5 +1,4 @@
-<details>
-<summary>Circle Creation (System vs. User)</summary>
+**Circle Creation (System vs. User)**
 
 ```mermaid
 sequenceDiagram
@@ -20,10 +19,7 @@ sequenceDiagram
     BE-->>User: 201 Created
 ```
 
-</details>
-
-<details>
-<summary>Hierarchical Role & Member Management</summary>
+**Hierarchical Role & Member Management**
 
 ```mermaid
 sequenceDiagram
@@ -51,10 +47,7 @@ sequenceDiagram
     BE-->>AdminActor: 200 OK
 ```
 
-</details>
-
-<details>
-<summary>Ownership Transfer (High Security)</summary>
+**Ownership Transfer (High Security)**
 
 ```mermaid
 sequenceDiagram
@@ -79,10 +72,7 @@ sequenceDiagram
     BE-->>Owner: 200 OK
 ```
 
-</details>
-
-<details>
-<summary>Fetch & Archiving (Privacy Rules)</summary>
+**Fetch & Archiving (Privacy Rules)**
 
 ```mermaid
 sequenceDiagram
@@ -110,5 +100,3 @@ sequenceDiagram
         BE-->>Requester: 200 OK (Logs visible to all members)
     end
 ```
-
-</details>
