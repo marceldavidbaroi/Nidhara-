@@ -1,0 +1,11 @@
+| Endpoint                      | HTTP Method | Purpose                                                                                                                                  | Public / Authenticated |
+| ----------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| `/api/login`                  | POST        | Authenticate user with username & password; issue access & refresh tokens; reset failed attempts if successful; handle cooldown/lockouts | Public                 |
+| `/api/logout`                 | POST        | Invalidate refresh token, clear session; delete cookies                                                                                  | Authenticated          |
+| `/api/register`               | POST        | Register new user; create default profile; issue access & refresh tokens; show recovery passkey                                          | Public                 |
+| `/api/user/regenerate-key`    | POST        | Regenerate user recovery passkey (requires re-auth / sudo mode)                                                                          | Authenticated          |
+| `/api/recover/initiate`       | POST        | Start account recovery; return available recovery methods (passkey / security questions)                                                 | Public                 |
+| `/api/recover/verify-key`     | POST        | Verify user-provided recovery passkey                                                                                                    | Public                 |
+| `/api/recover/questions`      | GET         | Fetch security questions for account recovery                                                                                            | Public                 |
+| `/api/recover/verify-answers` | POST        | Verify security question answers                                                                                                         | Public                 |
+| `/api/recover/reset`          | POST        | Reset password using temporary recovery token                                                                                            | Public                 |

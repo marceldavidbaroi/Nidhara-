@@ -47,7 +47,7 @@ auth_sessions (
   user_id BIGSERIAL FK(users.id),
 
   refresh_token_hash TEXT,
-
+  csrf_token TEXT,
   ip_address TEXT,
   user_agent TEXT,
   device_name TEXT,
