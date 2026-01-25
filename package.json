@@ -1,0 +1,36 @@
+{
+  "name": "nidhara-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "backend",
+    "frontend",
+    "docs-site"
+  ],
+  "scripts": {
+ 
+    "build:backend": "npm --workspace backend run build",
+    "start:backend": "npm --workspace backend run start",
+    "start:backend:dev": "npm --workspace backend run start:dev",
+    "lint:backend": "npm --workspace backend run lint",
+    "test:backend": "npm --workspace backend run test",
+
+ 
+    "build:frontend": "npm --workspace frontend run build",
+    "start:frontend": "npm --workspace frontend run start",
+    "dev:frontend": "npm --workspace frontend run dev",
+    "lint:frontend": "npm --workspace frontend run lint",
+
+
+    "build:docs": "npm --workspace docs-site run build",
+    "start:docs": "npm --workspace docs-site run start",
+    "clear:docs": "npm --workspace docs-site run clear",
+    "deploy:docs": "npm --workspace docs-site run deploy",
+
+    "db:start": "docker start nidhara-postgres",
+    "db:stop": "docker stop nidhara-postgres",
+    "db:restart": "docker restart nidhara-postgres",
+    "db:logs": "docker logs nidhara-postgres",
+    "db:ps": "docker ps"
+  }
+}
