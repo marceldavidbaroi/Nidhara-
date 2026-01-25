@@ -139,7 +139,15 @@ recovery_keys (
 )
 
 ```
-
+```sql
+security_questions (
+  id BIGSERIAL PK,
+  user_id BIGSERIAL FK(users.id) NOT NULL,
+  question TEXT NOT NULL,
+  answer_hash TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT now()
+)
+```
 ---
 
 ### **SecurityModule**
