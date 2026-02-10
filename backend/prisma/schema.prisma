@@ -1,30 +1,142 @@
 // This is your Prisma schema file
 
 generator client {
-  provider = "prisma-client"        // Recommended for v7 (Pure TS, no Rust)
-  output   = "../src/generated/client"
+  provider = "prisma-client-js"
 }
+
 
 datasource db {
   provider = "postgresql"
   // Note: url property is removed. It lives in prisma.config.ts
 }
 
-enum Role {
-  USER
-  ADMIN
+enum AuthCredentialType {
+  PASSWORD
+  PASSKEY
+  SECRET_QUESTION
+}
+
+enum SecurityEventType {
+  LOGIN_SUCCESS
+  LOGIN_FAILED
+  LOGOUT
+  REFRESH_ROTATED
+  ACCOUNT_LOCKED
+  ACCOUNT_UNLOCKED
+  PASSWORD_CHANGED
+  RECOVERY_KEY_USED
+  RECOVERY_KEY_REGENERATED
+  SUDO_MODE_ENABLED
+}
+
+enum SudoMethod {
+  PASSWORD
+  RECOVERY_KEY
+  MFA
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String?
-  password  String   
-  role      Role     @default(USER)       
-  
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           BigInt  @id @default(autoincrement()) @db.BigInt
+  username     String  @unique @db.Text
+  email        String  @unique @db.Text
+  displayName  String? @map("display_name") @db.Text
 
-  @@map("users") 
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  credentials    AuthCredential[]
+  sessions       AuthSession[]
+  securityEvents SecurityEvent[]
+  securityState  UserAccountSecurityState?
+
+  
+  sudoSession  SudoSession?
+
+  @@map("users")
 }
+
+model SudoSession {
+  userId     BigInt @id @map("user_id") @db.BigInt
+
+  sudoUntil  DateTime @map("sudo_until")
+  method     SudoMethod
+
+  ipAddress  String? @map("ip_address") @db.Text
+  userAgent  String? @map("user_agent") @db.Text
+
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sudo_sessions")
+}
+
+
+model AuthCredential {
+  id          BigInt @id @default(autoincrement()) @db.BigInt
+  userId      BigInt @map("user_id") @db.BigInt
+
+  type        AuthCredentialType
+  secretHash  String @map("secret_hash") @db.Text
+  metadata    Json?  @db.JsonB
+
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type])
+  @@map("auth_credentials")
+}
+
+model AuthSession {
+  id                BigInt @id @default(autoincrement()) @db.BigInt
+  userId            BigInt @map("user_id") @db.BigInt
+
+  refreshTokenHash  String @map("refresh_token_hash") @db.Text
+  csrfToken         String @map("csrf_token") @db.Text
+  ipAddress         String? @map("ip_address") @db.Text
+  userAgent         String? @map("user_agent") @db.Text
+  deviceName        String? @map("device_name") @db.Text
+
+  expiresAt         DateTime @map("expires_at")
+  revokedAt         DateTime? @map("revoked_at")
+
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("auth_sessions")
+}
+
+model SecurityEvent {
+  id        BigInt @id @default(autoincrement()) @db.BigInt
+  userId    BigInt? @map("user_id") @db.BigInt
+
+  type      SecurityEventType
+  metadata  Json?  @db.JsonB
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@map("security_events")
+}
+
+model UserAccountSecurityState {
+  userId            BigInt @id @map("user_id") @db.BigInt
+
+  failedAttempts    Int @default(0) @map("failed_attempts")
+  cooldownUntil     DateTime? @map("cooldown_until")
+  permanentlyLocked Boolean @default(false) @map("permanently_locked")
+  lastFailedAt      DateTime? @map("last_failed_at")
+
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_account_security_state")
+}
+
+
