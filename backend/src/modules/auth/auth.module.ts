@@ -5,6 +5,8 @@ import { AuthController } from './controller/auth.controller';
 import { AuthService } from './services/auth.service';
 import { AuthRepository } from './repository/auth.repository';
 import { AuthTokensService } from './services/auth.tokens';
+import { JwtStrategy } from './strategies/jwt.strategy';
+
 
 @Module({
   imports: [
@@ -12,6 +14,7 @@ import { AuthTokensService } from './services/auth.tokens';
     JwtModule.register({}), // we pass secrets per-sign call
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthRepository, AuthTokensService],
+  providers: [AuthService, AuthRepository, AuthTokensService,JwtStrategy],
+  exports:[JwtStrategy]
 })
 export class AuthModule {}

@@ -18,6 +18,13 @@ async function bootstrap() {
 
   // Central Swagger setup
   setupSwagger(app);
+  
+app.enableCors({
+  origin: [
+    'http://localhost:3000', // frontend dev
+  ],
+  credentials: true, // REQUIRED for cookies
+});
 
   await app.listen(process.env.PORT ?? 3000);
 }
