@@ -1,9 +1,11 @@
 import { Body, Controller, Post, Req, Res } from '@nestjs/common';
 import type { Request, Response } from 'express';
+
 import { AuthService } from '../services/auth.service';
 import { SignupDto } from '../dto/signup.dto';
 import { SigninDto } from '../dto/signin.dto';
 import { RefreshDto } from '../dto/refresh.dto';
+
 import {
   AuthControllerDocs,
   SignupDocs,
@@ -11,6 +13,8 @@ import {
   RefreshDocs,
   LogoutDocs,
 } from '@/common/swagger/modules/auth.swagger';
+
+import { toAuthTokensResponse } from '../transformers/auth.transformer';
 
 function setRefreshCookie(res: Response, token: string) {
   res.cookie('refresh_token', token, {
@@ -35,11 +39,7 @@ export class AuthController {
   async signup(@Body() dto: SignupDto, @Res({ passthrough: true }) res: Response) {
     const out = await this.auth.signup(dto);
     setRefreshCookie(res, out.refreshToken);
-    return {
-      accessToken: out.accessToken,
-      csrfToken: out.csrfToken,
-      expiresIn: out.expiresIn,
-    };
+    return toAuthTokensResponse(out);
   }
 
   @Post('signin')
@@ -47,11 +47,7 @@ export class AuthController {
   async signin(@Body() dto: SigninDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const out = await this.auth.signin(dto, { ip: req.ip, ua: req.headers['user-agent'] });
     setRefreshCookie(res, out.refreshToken);
-    return {
-      accessToken: out.accessToken,
-      csrfToken: out.csrfToken,
-      expiresIn: out.expiresIn,
-    };
+    return toAuthTokensResponse(out);
   }
 
   @Post('refresh')
@@ -60,11 +56,7 @@ export class AuthController {
     const refreshToken = req.cookies?.refresh_token as string | undefined;
     const out = await this.auth.refresh(refreshToken, dto.csrfToken);
     setRefreshCookie(res, out.refreshToken);
-    return {
-      accessToken: out.accessToken,
-      csrfToken: out.csrfToken,
-      expiresIn: out.expiresIn,
-    };
+    return toAuthTokensResponse(out);
   }
 
   @Post('logout')

@@ -1,10 +1,15 @@
 import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import * as argon2 from 'argon2';
+import { SecurityEventType } from '@prisma/client';
+
 import { UsersRepository } from '@/modules/users/repository/users.repository';
 import { UsersService } from '@/modules/users/services/users.service';
+
 import { AuthRepository } from '../repository/auth.repository';
 import { AuthTokensService } from './auth.tokens';
-import { SecurityEventType } from '@prisma/client';
+
+import { SignupDto } from '../dto/signup.dto';
+import { SigninDto } from '../dto/signin.dto';
 
 const accessTtlSeconds = Number(process.env.ACCESS_TOKEN_TTL_SECONDS ?? 900);
 const refreshTtlDays = Number(process.env.REFRESH_TOKEN_TTL_DAYS ?? 30);
@@ -15,6 +20,14 @@ function refreshExpiryDate(): Date {
   return d;
 }
 
+export type AuthSessionOutput = {
+  accessToken: string;
+  refreshToken: string;
+  csrfToken: string;
+  sessionId: string;
+  expiresIn: number;
+};
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -24,7 +37,7 @@ export class AuthService {
     private readonly tokens: AuthTokensService,
   ) {}
 
-  async signup(input: { username: string; email: string; displayName: string; password: string }) {
+  async signup(input: SignupDto): Promise<AuthSessionOutput> {
     await this.usersService.ensureUniqueOrThrow(input.email, input.username);
 
     const user = await this.usersRepo.create({
@@ -40,7 +53,10 @@ export class AuthService {
     return this.issueSession(user.id, { deviceName: 'signup' });
   }
 
-  async signin(input: { email: string; password: string; deviceName?: string }, meta?: { ip?: string; ua?: string }) {
+  async signin(
+    input: SigninDto,
+    meta?: { ip?: string; ua?: string },
+  ): Promise<AuthSessionOutput> {
     const user = await this.usersRepo.findByEmail(input.email);
     if (!user) {
       await this.authRepo.logEvent(SecurityEventType.LOGIN_FAILED, null, { reason: 'email_not_found' });
@@ -68,7 +84,7 @@ export class AuthService {
   private async issueSession(
     userId: bigint,
     meta?: { ipAddress?: string; userAgent?: string; deviceName?: string },
-  ) {
+  ): Promise<AuthSessionOutput> {
     const csrfToken = this.tokens.randomToken(16);
 
     // create refresh jwt (we need session id, so create session first with placeholder then rotate)
@@ -102,7 +118,7 @@ export class AuthService {
     };
   }
 
-  async refresh(refreshToken: string | undefined, csrfFromClient: string) {
+  async refresh(refreshToken: string | undefined, csrfFromClient: string): Promise<Omit<AuthSessionOutput, 'sessionId'>> {
     if (!refreshToken) throw new UnauthorizedException('Missing refresh token');
 
     const decoded = await this.tokens.verifyRefresh(refreshToken).catch(() => null);
@@ -127,6 +143,7 @@ export class AuthService {
       this.tokens.signAccess(payload),
       this.tokens.signRefresh(payload),
     ]);
+
     const newHash = await argon2.hash(newRefresh);
     await this.authRepo.rotateRefresh(sessionId, newHash, refreshExpiryDate());
     await this.authRepo.logEvent(SecurityEventType.REFRESH_ROTATED, userId, { sessionId: sessionId.toString() });
@@ -139,7 +156,7 @@ export class AuthService {
     };
   }
 
-  async logout(refreshToken: string | undefined) {
+  async logout(refreshToken: string | undefined): Promise<{ ok: true }> {
     if (!refreshToken) return { ok: true };
 
     const decoded = await this.tokens.verifyRefresh(refreshToken).catch(() => null);

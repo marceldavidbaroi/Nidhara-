@@ -1,31 +1,14 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
 
+import { AuthTag } from '../swagger.decorators';
+import { BadRequest, Conflict, Created, Forbidden, Ok, Unauthorized } from '../swagger.responses';
+
 import { SignupDto } from '@/modules/auth/dto/signup.dto';
 import { SigninDto } from '@/modules/auth/dto/signin.dto';
 import { RefreshDto } from '@/modules/auth/dto/refresh.dto';
 
-import { AuthTag } from '../swagger.decorators';
-import { BadRequest, Conflict, Created, Forbidden, Ok, Unauthorized } from '../swagger.responses';
-
-// If you have response DTOs, import them here (recommended)
-// import { AuthResponseDto } from '@/modules/auth/dto/auth.response.dto';
-
-const SIGNUP_EXAMPLE: Partial<SignupDto> = {
-  email: 'user@example.com',
-  password: 'Password@123',
-  // keep/remove these based on your real SignupDto fields:
-  username: 'john_doe',
-};
-
-const SIGNIN_EXAMPLE: Partial<SigninDto> = {
-  email: 'user@example.com',
-  password: 'Password@123',
-};
-
-const REFRESH_EXAMPLE: Partial<RefreshDto> = {
-  csrfToken: 'csrf_token_here',
-};
+import { AuthTokensResponseDto, OkResponseDto } from '@/modules/auth/dto/auth.response.dto';
 
 export function AuthControllerDocs() {
   return applyDecorators(AuthTag());
@@ -38,12 +21,18 @@ export function SignupDocs() {
     ApiBody({
       type: SignupDto,
       examples: {
-        default: { value: SIGNUP_EXAMPLE },
+        default: {
+          value: {
+            username: 'john_doe',
+            email: 'user@example.com',
+            displayName: 'John Doe',
+            password: 'Password@123',
+          },
+        },
       },
     }),
 
-    // Created(AuthResponseDto, 'User created and logged in'),
-    Created(undefined, 'User created and logged in'),
+    Created(AuthTokensResponseDto, 'User created and logged in'),
     BadRequest(),
     Conflict('Email or username already in use'),
   );
@@ -56,12 +45,17 @@ export function SigninDocs() {
     ApiBody({
       type: SigninDto,
       examples: {
-        default: { value: SIGNIN_EXAMPLE },
+        default: {
+          value: {
+            email: 'user@example.com',
+            password: 'Password@123',
+            deviceName: 'chrome',
+          },
+        },
       },
     }),
 
-    // Ok(AuthResponseDto, 'Signed in'),
-    Ok(undefined, 'Signed in'),
+    Ok(AuthTokensResponseDto, 'Signed in'),
     BadRequest(),
     Unauthorized('Invalid credentials'),
   );
@@ -74,12 +68,15 @@ export function RefreshDocs() {
     ApiBody({
       type: RefreshDto,
       examples: {
-        default: { value: REFRESH_EXAMPLE },
+        default: {
+          value: {
+            csrfToken: 'paste_csrf_token_from_signin_signup_response',
+          },
+        },
       },
     }),
 
-    // Ok(AuthResponseDto, 'Tokens refreshed'),
-    Ok(undefined, 'Tokens refreshed'),
+    Ok(AuthTokensResponseDto, 'Tokens refreshed'),
     BadRequest(),
     Unauthorized('Missing/invalid refresh token'),
     Forbidden('Session revoked/expired or CSRF mismatch'),
@@ -89,6 +86,6 @@ export function RefreshDocs() {
 export function LogoutDocs() {
   return applyDecorators(
     ApiOperation({ summary: 'Logout (revoke current session)' }),
-    Ok(undefined, 'Logged out'),
+    Ok(OkResponseDto, 'Logged out'),
   );
 }
