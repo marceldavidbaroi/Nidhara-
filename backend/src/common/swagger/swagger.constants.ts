@@ -19,3 +19,9 @@ export const COMMON_ERRORS = {
   CONFLICT: 'Conflict',
   INTERNAL: 'Internal server error',
 } as const;
+
+
+export const LOGIN_PAYLOAD = {
+  email: 'mew@example.com',
+  password: 'Password@123',
+};

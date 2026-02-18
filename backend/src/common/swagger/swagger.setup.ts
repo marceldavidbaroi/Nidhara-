@@ -17,7 +17,7 @@ export function setupSwagger(app: INestApplication) {
 
   // ✅ This avoids swagger-ui assets resolving to /docs/docs/*
   SwaggerModule.setup(SWAGGER.DOCS_PATH, app, document, {
-    useGlobalPrefix: true,
+    useGlobalPrefix: false,
     swaggerOptions: {
       persistAuthorization: true,
     },

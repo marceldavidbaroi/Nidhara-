@@ -1,10 +1,31 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiBody, ApiOperation } from '@nestjs/swagger';
+
+import { SignupDto } from '@/modules/auth/dto/signup.dto';
+import { SigninDto } from '@/modules/auth/dto/signin.dto';
+import { RefreshDto } from '@/modules/auth/dto/refresh.dto';
+
 import { AuthTag } from '../swagger.decorators';
 import { BadRequest, Conflict, Created, Forbidden, Ok, Unauthorized } from '../swagger.responses';
 
 // If you have response DTOs, import them here (recommended)
 // import { AuthResponseDto } from '@/modules/auth/dto/auth.response.dto';
+
+const SIGNUP_EXAMPLE: Partial<SignupDto> = {
+  email: 'user@example.com',
+  password: 'Password@123',
+  // keep/remove these based on your real SignupDto fields:
+  username: 'john_doe',
+};
+
+const SIGNIN_EXAMPLE: Partial<SigninDto> = {
+  email: 'user@example.com',
+  password: 'Password@123',
+};
+
+const REFRESH_EXAMPLE: Partial<RefreshDto> = {
+  csrfToken: 'csrf_token_here',
+};
 
 export function AuthControllerDocs() {
   return applyDecorators(AuthTag());
@@ -13,6 +34,14 @@ export function AuthControllerDocs() {
 export function SignupDocs() {
   return applyDecorators(
     ApiOperation({ summary: 'Create account' }),
+
+    ApiBody({
+      type: SignupDto,
+      examples: {
+        default: { value: SIGNUP_EXAMPLE },
+      },
+    }),
+
     // Created(AuthResponseDto, 'User created and logged in'),
     Created(undefined, 'User created and logged in'),
     BadRequest(),
@@ -23,6 +52,14 @@ export function SignupDocs() {
 export function SigninDocs() {
   return applyDecorators(
     ApiOperation({ summary: 'Sign in' }),
+
+    ApiBody({
+      type: SigninDto,
+      examples: {
+        default: { value: SIGNIN_EXAMPLE },
+      },
+    }),
+
     // Ok(AuthResponseDto, 'Signed in'),
     Ok(undefined, 'Signed in'),
     BadRequest(),
@@ -33,6 +70,14 @@ export function SigninDocs() {
 export function RefreshDocs() {
   return applyDecorators(
     ApiOperation({ summary: 'Refresh access token (rotates refresh token)' }),
+
+    ApiBody({
+      type: RefreshDto,
+      examples: {
+        default: { value: REFRESH_EXAMPLE },
+      },
+    }),
+
     // Ok(AuthResponseDto, 'Tokens refreshed'),
     Ok(undefined, 'Tokens refreshed'),
     BadRequest(),
